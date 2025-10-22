@@ -11,11 +11,5 @@
       "src": "/(.*)",
       "dest": "/server.js"
     }
-  ],
-  "env": {
-    "PROJECT_ID": "@project_id",
-    "CLIENT_EMAIL": "@client_email", 
-    "RSA": "@rsa",
-    "EMAIL": "@email"
-  }
+  ]
 }
