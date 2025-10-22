@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/server.js"
+    }
+  ],
+  "env": {
+    "PROJECT_ID": "@project_id",
+    "CLIENT_EMAIL": "@client_email", 
+    "RSA": "@rsa",
+    "EMAIL": "@email"
+  }
+}
