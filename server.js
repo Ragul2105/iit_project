@@ -53,11 +53,11 @@ const saveDataToFirestore = async (value1, value2, value3, value4, value5) => {
       .doc(EMAIL)
       .collection("readings")
       .add({
-        value1: value1,
-        value2: value2,
-        value3: value3,
-        value4: value4,
-        value5: value5,
+        waterTemp: value1,
+        airTemp: value2,
+        humidity: value3,
+        tds: value4,
+        pH: value5,
         timestamp: timestamp,
         createdAt: new Date()
       });
