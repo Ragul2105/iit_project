@@ -336,20 +336,20 @@ app.delete("/data/:id", async (req, res) => {
 
 app.post("/data", async (req, res) => {
   try {
-    const { value1, value2, value3, value4, value5 } = req.body;
+    const { waterTemp, airTemp, humidity, tds, pH } = req.body;
 
     // Validate required fields
-    if (value1 === undefined || value2 === undefined || value3 === undefined || value4 === undefined || value5 === undefined) {
+    if (waterTemp === undefined || airTemp === undefined || humidity === undefined || tds === undefined || pH === undefined) {
       return res.status(400).json({ 
         error: "Missing required fields", 
-        required: ["value1", "value2", "value3", "value4", "value5"] 
+        required: ["waterTemp", "airTemp", "humidity", "tds", "pH"] 
       });
     }
 
-    console.log("Received data:", { value1, value2, value3, value4, value5 });
+    console.log("Received data:", { waterTemp, airTemp, humidity, tds, pH });
 
     // Save to Firestore
-    const result = await saveDataToFirestore(value1, value2, value3, value4, value5);
+    const result = await saveDataToFirestore(waterTemp, airTemp, humidity, tds, pH);
 
     if (result.success) {
       res.status(200).json({ 
