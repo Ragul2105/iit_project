@@ -125,40 +125,40 @@ app.get("/data", async (req, res) => {
 });
 
 // GET data by ID
-app.get("/data/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
+// app.get("/data/:id", async (req, res) => {
+//   try {
+//     const { id } = req.params;
     
-    const doc = await db
-      .collection(COLLECTION)
-      .doc(EMAIL)
-      .collection("readings")
-      .doc(id)
-      .get();
+//     const doc = await db
+//       .collection(COLLECTION)
+//       .doc(EMAIL)
+//       .collection("readings")
+//       .doc(id)
+//       .get();
 
-    if (!doc.exists) {
-      return res.status(404).json({ 
-        error: "Data not found", 
-        id: id 
-      });
-    }
+//     if (!doc.exists) {
+//       return res.status(404).json({ 
+//         error: "Data not found", 
+//         id: id 
+//       });
+//     }
 
-    res.status(200).json({ 
-      message: "Data retrieved successfully", 
-      data: {
-        id: doc.id,
-        ...doc.data()
-      }
-    });
+//     res.status(200).json({ 
+//       message: "Data retrieved successfully", 
+//       data: {
+//         id: doc.id,
+//         ...doc.data()
+//       }
+//     });
 
-  } catch (error) {
-    console.error("Error retrieving data by ID:", error);
-    res.status(500).json({ 
-      error: "Failed to retrieve data", 
-      message: error.message 
-    });
-  }
-});
+//   } catch (error) {
+//     console.error("Error retrieving data by ID:", error);
+//     res.status(500).json({ 
+//       error: "Failed to retrieve data", 
+//       message: error.message 
+//     });
+//   }
+// });
 
 // GET latest data record
 app.get("/data/latest", async (req, res) => {
@@ -191,6 +191,49 @@ app.get("/data/latest", async (req, res) => {
     console.error("Error retrieving latest data:", error);
     res.status(500).json({ 
       error: "Failed to retrieve latest data", 
+      message: error.message 
+    });
+  }
+});
+
+// GET last 30 data records
+app.get("/data/last30", async (req, res) => {
+  try {
+    const snapshot = await db
+      .collection(COLLECTION)
+      .doc(EMAIL)
+      .collection("readings")
+      .orderBy("createdAt", "desc")
+      .limit(30)
+      .get();
+
+    if (snapshot.empty) {
+      return res.status(200).json({ 
+        message: "No data found", 
+        data: [],
+        count: 0
+      });
+    }
+
+    const data = [];
+    snapshot.forEach(doc => {
+      data.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+
+    res.status(200).json({ 
+      message: "Last 30 data records retrieved successfully", 
+      data: data,
+      count: data.length,
+      requested: 30
+    });
+
+  } catch (error) {
+    console.error("Error retrieving last 30 data records:", error);
+    res.status(500).json({ 
+      error: "Failed to retrieve last 30 data records", 
       message: error.message 
     });
   }
@@ -340,6 +383,7 @@ app.get("/routes", (req, res) => {
     { method: "GET", path: "/data", description: "Get all data (query params: limit, orderBy, order)" },
     { method: "GET", path: "/data/:id", description: "Get data by ID" },
     { method: "GET", path: "/data/latest", description: "Get latest data record" },
+    { method: "GET", path: "/data/last30", description: "Get last 30 data records" },
     { method: "GET", path: "/data/range", description: "Get data by date range (query params: startDate, endDate, limit)" },
     { method: "DELETE", path: "/data/:id", description: "Delete data by ID" }
   ];
@@ -360,6 +404,7 @@ app.listen(PORT, () => {
   console.log(`   POST /data - Save data`);
   console.log(`   GET  /data - Get all data`);
   console.log(`   GET  /data/latest - Get latest data`);
+  console.log(`   GET  /data/last30 - Get last 30 data records`);
   console.log(`   GET  /data/:id - Get data by ID`);
   console.log(`   GET  /data/range - Get data by date range`);
   console.log(`   DELETE /data/:id - Delete data by ID`);
